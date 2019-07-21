@@ -24,9 +24,10 @@ async function main() {
 
     const entries = [];
     $(".section .table-list-rows .row").map(function(_, elem) {
-      const st = $(this)
+      const st = $(elem)
         .find(".col-1")
         .text();
+
       const stc = new Date(
         date.getUTCFullYear(),
         date.getUTCMonth(),
@@ -35,23 +36,17 @@ async function main() {
         st.split(":")[1]
       );
 
+      const title = $(elem)
+        .find(".col-9")
+        .text()
+        .trim();
+
       if (stc.getTime() >= time.getTime()) {
-        entries.push({
-          startTime: st,
-          title: $(this)
-            .find(".col-9")
-            .text()
-            .trim(),
-          category: $(this)
-            .find(".gray")
-            .text()
-        });
+        console.log(`${st} ${title}`);
       }
     });
 
-    entries.forEach(function(item) {
-      console.log(`${item.startTime} ${item.title}`);
-    });
+    entries.forEach(function(item) {});
   });
 }
 
