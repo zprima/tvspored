@@ -27,8 +27,28 @@ function convertToTimeWithHour(hour) {
 const startingTime = convertToTimeWithHour(17);
 const closingTime = convertToTimeWithHour(21);
 
+function displayTimeProgram($, elem) {
+  const time = $(elem)
+    .find(".time")
+    .text();
+  const prog = $(elem)
+    .find(".prog")
+    .text();
+
+  if (time.length === 0) {
+    return;
+  }
+
+  const progTime = convertToTimeWithHour(time.split(":")[0]);
+
+  if (progTime >= startingTime && progTime <= closingTime) {
+    const t = prog.includes("Judo") ? chalk.green(prog) : prog;
+    console.log(`${time} ${t}`);
+  }
+}
+
 async function main() {
-  interestingPrograms.map(async function(program) {
+  interestingPrograms.map(async program => {
     const url = `http://www.tvsporedi.si/spored.php?id=${program}`;
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
@@ -40,23 +60,7 @@ async function main() {
     console.log(programTitle);
 
     $("#a > .schedule div").each((_, elem) => {
-      const time = $(elem)
-        .find(".time")
-        .text();
-      const prog = $(elem)
-        .find(".prog")
-        .text();
-
-      if (time.length === 0) {
-        return;
-      }
-
-      const progTime = convertToTimeWithHour(time.split(":")[0]);
-
-      if (progTime >= startingTime && progTime <= closingTime) {
-        const t = prog.includes("Judo") ? chalk.green(prog) : prog;
-        console.log(`${time} ${t}`);
-      }
+      displayTimeProgram($, elem);
     });
   });
 }
