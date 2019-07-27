@@ -1,52 +1,63 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const chalk = require("chalk");
 
-const interestingPrograms = ["slo2", "akanal", "poptv", "brio"];
+const interestingPrograms = [
+  "History%202%20HD",
+  "Kanal%20A%20HD",
+  "Kino%20HD",
+  "POP%20HD",
+  "National%20Geographic",
+  "SciFi",
+  "SLO%202"
+];
 
 const date = new Date();
-const time = new Date(
-  date.getUTCFullYear(),
-  date.getUTCMonth(),
-  date.getUTCDay(),
-  "17",
-  "00"
-);
+
+function convertToTimeWithHour(hour) {
+  return new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDay(),
+    hour,
+    "00"
+  ).getTime();
+}
+
+const startingTime = convertToTimeWithHour(17);
+const closingTime = convertToTimeWithHour(21);
 
 async function main() {
   interestingPrograms.map(async function(program) {
-    const url = `https://tv-spored.siol.net/kanal/${program}`;
+    const url = `http://www.tvsporedi.si/spored.php?id=${program}`;
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
 
-    const programTitle = $(".section .wrapper .table-list-header h2").text();
+    const programTitle = $(
+      "#content > div.right_three > div:nth-child(1)"
+    ).text();
     console.log("-----");
     console.log(programTitle);
 
-    const entries = [];
-    $(".section .table-list-rows .row").map(function(_, elem) {
-      const st = $(elem)
-        .find(".col-1")
+    $("#a > .schedule div").each((_, elem) => {
+      const time = $(elem)
+        .find(".time")
+        .text();
+      const prog = $(elem)
+        .find(".prog")
         .text();
 
-      const stc = new Date(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDay(),
-        st.split(":")[0],
-        st.split(":")[1]
-      );
+      if (time.length === 0) {
+        return;
+      }
 
-      const title = $(elem)
-        .find(".col-9")
-        .text()
-        .trim();
+      const progTime = convertToTimeWithHour(time.split(":")[0]);
 
-      if (stc.getTime() >= time.getTime()) {
-        console.log(`${st} ${title}`);
+      if (progTime >= startingTime && progTime <= closingTime) {
+        const t = prog.includes("Judo") ? chalk.green(prog) : prog;
+        console.log(`${time} ${t}`);
       }
     });
-
-    entries.forEach(function(item) {});
   });
 }
 
