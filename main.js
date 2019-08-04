@@ -9,7 +9,9 @@ const interestingPrograms = [
   "POP%20HD",
   "National%20Geographic",
   "SciFi",
-  "SLO%202"
+  "SLO%202",
+  "Šport%20TV3",
+  "Šport%20TV2"
 ];
 
 const date = new Date();
@@ -49,7 +51,7 @@ function displayTimeProgram($, elem) {
 
 async function main() {
   interestingPrograms.map(async program => {
-    const url = `http://www.tvsporedi.si/spored.php?id=${program}`;
+    const url = encodeURI(`http://www.tvsporedi.si/spored.php?id=${program}`);
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
 
