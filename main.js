@@ -10,8 +10,7 @@ const interestingPrograms = [
   "National%20Geographic",
   "SciFi",
   "SLO%202",
-  "Šport%20TV3",
-  "Šport%20TV2"
+  "Animal%20Planet%20HD"
 ];
 
 const date = new Date();
